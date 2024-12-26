@@ -6,3 +6,4 @@ streamlit_option_menu
 scikit-learn
 xgboost
 pickle4
+seaborn
