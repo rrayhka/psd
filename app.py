@@ -22,7 +22,8 @@ sns.set(style="darkgrid", font_scale=1.5)
 pd.set_option("display.max_columns", None)
 pd.set_option("display.max_rows", None)
 from streamlit_option_menu import option_menu
-
+filePath = "carPrice.csv"
+df = pd.read_csv(filePath)
 
 
 def main():
@@ -116,8 +117,6 @@ def scatter_plot2(cols):
     st.pyplot(fig)
 
 def show_understanding():
-    filePath = "carPrice.csv"
-    df = pd.read_csv(filePath)
     st.header("1. Exploratory Data Analysis")
     # Informasi dasar
     st.subheader("1.1 Informasi Dasar Dataset")
