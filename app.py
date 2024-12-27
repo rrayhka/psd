@@ -12,10 +12,10 @@ pd.set_option("display.max.columns",None)
 pd.set_option("display.max.rows",None)
 from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor, AdaBoostRegressor
+from sklearn.ensemble import RandomForestRegressor
 from xgboost import XGBRegressor
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, mean_absolute_percentage_error, root_mean_squared_error
+from sklearn.metrics import r2_score
 from sklearn.preprocessing import StandardScaler
 warnings.filterwarnings("ignore")
 sns.set(style="darkgrid", font_scale=1.5)
@@ -542,8 +542,8 @@ def show_preprocessing(df):
     for col in categorical_cols.columns:
         st.write(f"Kolom: {col}")
         st.write(new_df[col].unique())
-        st.write("-" * 30)
-    
+        
+    st.write("-" * 30)
     st.write("Mengecek unik data pada kolom 'CarsRange':")
     st.write(new_df["CarsRange"].unique())
 
@@ -555,7 +555,8 @@ def show_preprocessing(df):
 
     st.subheader("2.5 Scaling Fitur Numerik")
     scaler = StandardScaler()
-    num_cols = ['wheelbase', 'carlength', 'carwidth', 'curbweight', 'enginesize', 'boreratio', 'horsepower', 'citympg', 'highwaympg']
+    num_cols = ['wheelbase', 'carlength', 'carwidth', 'curbweight', 
+    'enginesize', 'boreratio', 'horsepower', 'citympg', 'highwaympg']
     new_df[num_cols] = scaler.fit_transform(new_df[num_cols])
     st.write("Dataset setelah scaling:")
     st.write(new_df.head())
@@ -582,15 +583,16 @@ def show_model(new_df):
         train_r2 = r2_score(y_train, x_train_pred) * 100
         test_r2 = r2_score(y_test, x_test_pred) * 100
         # Metrics
-        mse_train = mean_squared_error(y_train, x_train_pred)
-        rmse_train = mse_train ** 0.5
-        mae_train = mean_absolute_error(y_train, x_train_pred)
-        mape_train = (abs((y_train - x_train_pred) / y_train).mean()) * 100
-        mse_test = mean_squared_error(y_test, x_test_pred)
-        rmse_test = mse_test ** 0.5
-        mae_test = mean_absolute_error(y_test, x_test_pred)
-        mape_test = (abs((y_test - x_test_pred) / y_test).mean()) * 100
-        return train_r2, test_r2, mse_train, rmse_train, mae_train, mape_train, mse_test, rmse_test, mae_test, mape_test
+        # mse_train = mean_squared_error(y_train, x_train_pred)
+        # rmse_train = mse_train ** 0.5
+        # mae_train = mean_absolute_error(y_train, x_train_pred)
+        # mape_train = (abs((y_train - x_train_pred) / y_train).mean()) * 100
+        # mse_test = mean_squared_error(y_test, x_test_pred)
+        # rmse_test = mse_test ** 0.5
+        # mae_test = mean_absolute_error(y_test, x_test_pred)
+        # mape_test = (abs((y_test - x_test_pred) / y_test).mean()) * 100
+        # return train_r2, test_r2, mse_train, rmse_train, mae_train, mape_train, mse_test, rmse_test, mae_test, mape_test
+        return train_r2, test_r2
     # Models
     models = {
         "Linear Regression": LinearRegression(),
@@ -602,23 +604,22 @@ def show_model(new_df):
     training_score = []
     testing_score = []
     results = []
-
     for model_name, model in models.items():
-        train_r2, test_r2, mse_train, rmse_train, mae_train, mape_train, mse_test, rmse_test, mae_test, mape_test = model_prediction(model)
+        train_r2, test_r2 = model_prediction(model)
         training_score.append(train_r2)
         testing_score.append(test_r2)
         results.append({
             "Model": model_name,
             "Train R2": train_r2,
             "Test R2": test_r2,
-            "MSE Train": mse_train,
-            "RMSE Train": rmse_train,
-            "MAE Train": mae_train,
-            "MAPE Train": mape_train,
-            "MSE Test": mse_test,
-            "RMSE Test": rmse_test,
-            "MAE Test": mae_test,
-            "MAPE Test": mape_test
+            # "MSE Train": mse_train,
+            # "RMSE Train": rmse_train,
+            # "MAE Train": mae_train,
+            # "MAPE Train": mape_train,
+            # "MSE Test": mse_test,
+            # "RMSE Test": rmse_test,
+            # "MAE Test": mae_test,
+            # "MAPE Test": mape_test
         })
 
     st.write("3.1 Hasil Model:")
@@ -626,6 +627,7 @@ def show_model(new_df):
     st.write(results_df)
 
     st.header("4. Evaluasi Performa Model")
+    st.write("Matriks Evaluasi menggunakan R2 Score dikarenakan saya ingin mengecek variabilitas harga mobil yang dapat dijelaskan oleh fitur-fitur yang ada.")
     plot_df = pd.DataFrame({"Algorithms": list(models.keys()), "Training Score": training_score, "Testing Score": testing_score})
     fig, ax = plt.subplots(figsize=(16, 6))
     plot_df.plot(x="Algorithms", y=["Training Score", "Testing Score"], kind="bar", colormap="Set1", ax=ax)
@@ -633,7 +635,7 @@ def show_model(new_df):
     st.pyplot(fig)
     st.markdown(
         """
-        - Model **Random Forest** memberikan performa tertinggi sekitar **95%**.
+        - Model **Random Forest** memberikan performa tertinggi sekitar **95%** pada test berdasarkan $R^2$.
         - Performa model **XGBoost** juga sangat baik.
         - Jadi, saya dapat menggunakan kedua model ini untuk memprediksi harga mobil.
         - saya lebih prefer menggunakan random forest dikarenakan tidak overfitting, terlihat R^2 score pada training dan testing tidak terlalu jauh.   
