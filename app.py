@@ -40,12 +40,12 @@ def main():
             # show_preprocessing(st.session_state["dfUnderstanding"])
             st.session_state["dfPreprocessing"] = show_preprocessing(st.session_state["dfUnderstanding"])
         else:
-            st.warning("Silakan kunjungi halaman Data Understanding terlebih dahulu.")
+            st.warning("Silakan kunjungi halaman Data Understanding terlebih dahulu dan baca sampai selesai.")
     elif page == "Model & Evaluasi":
         if "dfPreprocessing" in st.session_state:
             st.session_state["dfModel"] = show_model(st.session_state["dfPreprocessing"])
         else:
-            st.warning("Silakan kunjungi halaman Preposesing terlebih dahulu.")
+            st.warning("Silakan kunjungi halaman Preposesing terlebih dahulu dan baca sampai selesai.")
     elif page == "Testing":
         show_testing()
 
